@@ -1,14 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tracker Watch</title>
-  <style>
-    body { font-family: sans-serif; padding: 10px; width: 250px; }
-  </style>
+  <title>Cookie Watch</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h3>Third-Party Trackerji</h3>
-  <ul id="trackerList"></ul>
+  <div class="header">
+    <div class="header-left">
+      <div class="header-icon">
+        <i class="bi bi-shield-lock"></i>
+      </div>
+      <div>
+        <h1>Cookie Watch</h1>
+        <div class="site-url" id="currentUrl">Loading site...</div>
+      </div>
+    </div>
+    <div>
+      <button class="btn btn-sm btn-outline-primary" id="refreshBtn">
+        <i class="bi bi-arrow-repeat"></i>
+      </button>
+    </div>
+  </div>
+  
+  <div class="panel">
+    <div class="cookie-stats">
+      <div class="stat-group">
+        <div class="stat-number total" id="totalCount">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-group">
+        <div class="stat-number third-party" id="thirdPartyCount">0</div>
+        <div class="stat-label">Third-party</div>
+      </div>
+      <div class="stat-group">
+        <div class="stat-number first-party" id="firstPartyCount">0</div>
+        <div class="stat-label">First-party</div>
+      </div>
+    </div>
+    
+    <div class="cookie-chart">
+      <div class="chart-portion third-party" id="thirdPartyPortion"></div>
+      <div class="chart-portion first-party" id="firstPartyPortion"></div>
+    </div>
+  </div>
+  
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-header-title">Cookies</div>
+      <div class="dropdown">
+        <button class="dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-filter"></i>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+          <li><a class="dropdown-item active" href="#" data-filter="all">All Cookies</a></li>
+          <li><a class="dropdown-item" href="#" data-filter="third-party">Third-party Only</a></li>
+          <li><a class="dropdown-item" href="#" data-filter="first-party">First-party Only</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="cookie-list" id="cookieList">
+      <!-- Cookie items will be dynamically inserted here -->
+      <div class="no-cookies" id="noCookies">
+        <i class="bi bi-search"></i>
+        <p>No cookies detected</p>
+      </div>
+    </div>
+    
+    <div class="panel-footer">
+      <button class="btn btn-sm btn-outline-secondary" id="exportBtn">
+        <i class="bi bi-download"></i>
+      </button>
+      <button class="btn btn-danger btn-sm" id="blockAllBtn">
+        <i class="bi bi-shield-fill-x"></i> Block All Third-party
+      </button>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

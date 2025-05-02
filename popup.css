@@ -1,25 +1,269 @@
 body {
-  font-family: Arial, sans-serif;
-  min-width: 250px;
-  padding: 10px;
-}
-h1 {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-ul {
-  list-style-type: none;
+  font-family: 'Inter', sans-serif;
+  min-width: 300px;
+  max-width: 320px;
   padding: 0;
+  margin: 0;
+  background-color: #f5f8fa;
+  color: #1a2b3c;
+  font-size: 13px;
 }
-li {
-  padding: 4px 0;
+
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3182ce;
+  font-size: 18px;
+}
+
+h1 {
   font-size: 14px;
+  margin: 0;
+  font-weight: 600;
 }
-  button {
-    margin-top: 10px;
-    padding: 5px 10px;
-  }
-  label {
-    display: block;
-    margin-top: 10px;
-  }
+
+.site-url {
+  font-size: 11px;
+  color: #718096;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.panel {
+  background-color: #fff;
+  border-radius: 6px;
+  margin: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.panel-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header-title {
+  font-size: 13px;
+}
+
+.cookie-chart {
+  display: flex;
+  padding: 10px 12px;
+}
+
+.chart-portion {
+  height: 6px;
+  border-radius: 3px;
+  min-width: 3px;
+  transition: flex 0.3s ease;
+}
+
+.chart-portion.third-party {
+  background-color: #f56565;
+  flex: 1;
+}
+
+.chart-portion.first-party {
+  background-color: #48bb78;
+  flex: 0;
+  margin-left: 3px;
+}
+
+.cookie-item {
+  display: flex;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  align-items: center;
+}
+
+.cookie-icon {
+  margin-right: 8px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.cookie-info {
+  flex: 1;
+}
+
+.cookie-domain {
+  font-weight: 500;
+  margin-bottom: 2px;
+  font-size: 12px;
+}
+
+.cookie-meta {
+  font-size: 10px;
+  color: #718096;
+}
+
+.cookie-actions {
+  margin-left: 8px;
+}
+
+.cookie-actions .btn {
+  padding: 2px 5px;
+  font-size: 10px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.tag-third-party {
+  background-color: #fed7d7;
+  color: #c53030;
+}
+
+.tag-first-party {
+  background-color: #c6f6d5;
+  color: #276749;
+}
+
+.tag-category {
+  background-color: #e2e8f0;
+  color: #4a5568;
+  margin-left: 2px;
+}
+
+.panel-footer {
+  padding: 8px 12px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cookie-stats {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.stat-group {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.stat-number.third-party {
+  color: #f56565;
+}
+
+.stat-number.first-party {
+  color: #48bb78;
+}
+
+.stat-number.total {
+  color: #3182ce;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: #718096;
+  margin-top: 2px;
+}
+
+.dropdown-toggle {
+  background: none;
+  border: none;
+  color: #718096;
+  cursor: pointer;
+  padding: 3px 6px;
+  font-size: 12px;
+}
+
+.dropdown-toggle:hover {
+  color: #4a5568;
+}
+
+.cookie-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.no-cookies {
+  text-align: center;
+  padding: 20px 0;
+  color: #718096;
+}
+
+.no-cookies i {
+  font-size: 24px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.no-cookies p {
+  margin: 0;
+  font-size: 12px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cookie-item {
+  animation: fadeIn 0.2s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+.cookie-tags {
+  margin-top: 2px;
+}
+
+.btn {
+  font-size: 11px;
+  padding: 3px 6px;
+}
+
+.dropdown-menu {
+  font-size: 12px;
+  min-width: 140px;
+}
+
+.dropdown-item {
+  padding: 4px 10px;
+}
+
+.alert {
+  font-size: 12px;
+  padding: 5px 10px;
+}
