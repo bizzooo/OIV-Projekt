@@ -1,20 +1,150 @@
+// popup.js
 document.addEventListener('DOMContentLoaded', () => {
-    const list = document.getElementById("trackerList");
-  
-    chrome.runtime.sendMessage({ type: "getTrackers" }, (response) => {
-      list.innerHTML = "";
-  
-      if (!response || response.length === 0) {
-        const li = document.createElement("li");
-        li.textContent = "Ni zaznanih third-party zahtev.";
-        list.appendChild(li);
-      } else {
-        response.forEach(domain => {
-          const li = document.createElement("li");
-          li.textContent = domain;
-          list.appendChild(li);
-        });
-      }
+  // UI elements
+  const currentUrlEl       = document.getElementById('currentUrl');
+  const totalCountEl       = document.getElementById('totalCount');
+  const thirdPartyCountEl  = document.getElementById('thirdPartyCount');
+  const firstPartyCountEl  = document.getElementById('firstPartyCount');
+  const thirdPortionEl     = document.getElementById('thirdPartyPortion');
+  const firstPortionEl     = document.getElementById('firstPartyPortion');
+  const cookieListEl       = document.getElementById('cookieList');
+  const noCookiesEl        = document.getElementById('noCookies');
+  const refreshBtn         = document.getElementById('refreshBtn');
+  const exportBtn          = document.getElementById('exportBtn');
+  const blockAllBtn        = document.getElementById('blockAllBtn');
+  const filterItems        = document.querySelectorAll('.dropdown-item');
+
+  let thirdPartyCookies = [];
+  let firstPartyCookies = [];
+
+  // Wire up Refresh button
+  refreshBtn.addEventListener('click', loadAllCookies);
+
+  // Wire up filter dropdown
+  filterItems.forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      filterItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      applyFilter(item.dataset.filter);
     });
   });
-  
+
+  // Export to CSV (requires "downloads" permission in your manifest)
+  exportBtn.addEventListener('click', () => {
+    const rows = [
+      ['Name','Domain','Type'],
+      ...firstPartyCookies.map(c => [c.name, c.domain, c.type]),
+      ...thirdPartyCookies.map(c => [c.name, c.domain, c.type])
+    ];
+    const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const url  = URL.createObjectURL(blob);
+    chrome.downloads.download({ url, filename: 'cookies.csv' });
+  });
+
+  // Block all third-party cookies (stub – needs background support)
+  blockAllBtn.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ type: 'blockThirdPartyCookies' }, () => {
+      loadAllCookies();
+    });
+  });
+
+  // Initial load
+  loadAllCookies();
+
+  // --- Core logic ---
+  function loadAllCookies() {
+    cookieListEl.innerHTML = '';
+    noCookiesEl.classList.add('hidden');
+
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      const tab = tabs[0];
+      const url = tab.url;
+      const hostname = new URL(url).hostname;
+      currentUrlEl.textContent = hostname;
+
+      // 1) get first-party cookies
+      chrome.cookies.getAll({ url }, fp => {
+        firstPartyCookies = fp.map(c => ({
+          name:   c.name,
+          domain: c.domain.replace(/^\./, ''),
+          type:   'First-party'
+        }));
+
+        // 2) ask background for third-party cookies
+        chrome.runtime.sendMessage(
+          { type: 'getCookiesForTab', tabId: tab.id },
+          resp => {
+            thirdPartyCookies = (resp.cookies||[]).map(c => ({
+              name:   c.name,
+              domain: c.domain,
+              type:   c.type
+            }));
+            updateStats();
+            renderList();
+          }
+        );
+      });
+    });
+  }
+
+  function updateStats() {
+    const thirdCount = thirdPartyCookies.length;
+    const firstCount = firstPartyCookies.length;
+    const total      = thirdCount + firstCount;
+
+    totalCountEl.textContent      = total;
+    thirdPartyCountEl.textContent = thirdCount;
+    firstPartyCountEl.textContent = firstCount;
+
+    // adjust flex‐grow to reflect proportions
+    thirdPortionEl.style.flexGrow = thirdCount;
+    firstPortionEl.style.flexGrow = firstCount;
+  }
+
+  function renderList() {
+    const all = [...firstPartyCookies, ...thirdPartyCookies];
+    if (!all.length) {
+      noCookiesEl.classList.remove('hidden');
+      return;
+    }
+
+    all.forEach(c => {
+      const item = document.createElement('div');
+      item.className = 'cookie-item';
+      item.dataset.type = c.type;
+
+      item.innerHTML = `
+        <div class="cookie-icon"><i class="bi bi-cookie"></i></div>
+        <div class="cookie-info">
+          <div class="cookie-domain">${c.domain}</div>
+          <div class="cookie-meta">${c.name}</div>
+          <div class="cookie-tags">
+            <span class="tag ${c.type === 'First-party' ? 'tag-first-party' : 'tag-third-party'}">
+              ${c.type}
+            </span>
+          </div>
+        </div>
+      `;
+      cookieListEl.appendChild(item);
+    });
+
+    // apply currently-selected filter
+    const activeFilter = document.querySelector('.dropdown-item.active').dataset.filter;
+    applyFilter(activeFilter);
+  }
+
+  function applyFilter(filter) {
+    cookieListEl.querySelectorAll('.cookie-item').forEach(item => {
+      const t = item.dataset.type;
+      if (filter === 'all') {
+        item.classList.remove('hidden');
+      } else if (filter === 'third-party') {
+        item.classList.toggle('hidden', t === 'First-party');
+      } else if (filter === 'first-party') {
+        item.classList.toggle('hidden', t !== 'First-party');
+      }
+    });
+  }
+});

@@ -1,24 +1,35 @@
 {
-    "manifest_version": 3,
-    "name": "Tracker Watch",
-    "version": "1.0",
-    "description": "Opozarja na third-party trackerje na spletnih straneh.",
-    "permissions": ["storage", "tabs", "webRequest"],
-    "host_permissions": ["<all_urls>"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "icon.png",
-        "48": "icon.png",
-        "128": "icon.png"
-      }
-    },
-    "icons": {
+  "manifest_version": 3,
+  "name": "Tracker Watch",
+  "version": "1.0",
+  "description": "Detect and display third-party and tracking cookies in Chrome.",
+  "permissions": [
+    "cookies",
+    "storage",
+    "webRequest",
+    "tabs",
+    "downloads",
+    "webNavigation"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
       "16": "icon.png",
       "48": "icon.png",
       "128": "icon.png"
     }
-  }
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "web_accessible_resources": [{
+    "resources": ["trackers.json"],
+    "matches": ["<all_urls>"]
+  }]
+}
