@@ -123,13 +123,17 @@ function classifyCookie(host, pageDomain) {
 
 // 7) Respond to popup
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  const info = tabData[msg.tabId];
+  // — Respond to popup’s “getCookiesForTab” request
   if (msg.type === 'getCookiesForTab') {
+    // msg.tabId comes from popup.js
+    const info = tabData[msg.tabId];
     sendResponse({ cookies: info ? info.cookies : [] });
-    return true;
+    return true;  // keep the message channel open
   }
 
+  // — Block all third-party cookies
   if (msg.type === 'blockThirdPartyCookies') {
+    const info = tabData[msg.tabId];
     if (info) {
       info.cookies.forEach(c => {
         if (c.type !== 'First-party') {
@@ -143,6 +147,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       info.cookies = info.cookies.filter(c => c.type === 'First-party');
     }
     sendResponse({ ok: true });
-    return true;
+    return true;    // ensure the popup’s callback runs
   }
 });

@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const exportBtn          = document.getElementById('exportBtn');
   const blockAllBtn        = document.getElementById('blockAllBtn');
   const filterItems        = document.querySelectorAll('.dropdown-item');
+  const trackerCountEl     = document.getElementById('trackerCount');
+  const trackerPortionEl   = document.getElementById('trackerPortion');
 
   let thirdPartyCookies = [];
   let firstPartyCookies = [];
@@ -45,8 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Block all third-party cookies (stub – needs background support)
   blockAllBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'blockThirdPartyCookies' }, () => {
-      loadAllCookies();
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tabId = tabs[0].id;
+      chrome.runtime.sendMessage(
+        { type: 'blockThirdPartyCookies', tabId },
+        () => loadAllCookies()
+      );
     });
   });
 
@@ -92,15 +98,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateStats() {
     const thirdCount = thirdPartyCookies.length;
     const firstCount = firstPartyCookies.length;
-    const total      = thirdCount + firstCount;
+    const trackerCount = thirdPartyCookies.filter(c => c.type === 'Tracker').length;
+    const total = thirdCount + firstCount + trackerCount;
 
     totalCountEl.textContent      = total;
     thirdPartyCountEl.textContent = thirdCount;
     firstPartyCountEl.textContent = firstCount;
+    trackerCountEl.textContent = trackerCount;
 
     // adjust flex‐grow to reflect proportions
     thirdPortionEl.style.flexGrow = thirdCount;
     firstPortionEl.style.flexGrow = firstCount;
+    trackerCountEl.style.flexGrow = trackerCount;
   }
 
   function renderList() {
@@ -121,7 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="cookie-domain">${c.domain}</div>
           <div class="cookie-meta">${c.name}</div>
           <div class="cookie-tags">
-            <span class="tag ${c.type === 'First-party' ? 'tag-first-party' : 'tag-third-party'}">
+            <span class="tag ${c.type === 'First-party' ? 'tag-first-party' : 
+              c.type === 'Tracker' ? 'tag-tracker' : 'tag-third-party'
+            }">
               ${c.type}
             </span>
           </div>
@@ -148,3 +159,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+

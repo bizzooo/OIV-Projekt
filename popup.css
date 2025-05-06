@@ -83,6 +83,11 @@ h1 {
 }
 
 .chart-portion.third-party {
+  background-color: #d69e2e;
+  flex: 1;
+}
+
+.chart-portion.third-party {
   background-color: #f56565;
   flex: 1;
 }
@@ -139,8 +144,17 @@ h1 {
 }
 
 .tag-third-party {
-  background-color: #fed7d7;
-  color: #c53030;
+  background-color: #fefcbf;  /* yellow-100 */
+  color:          #d69e2e; 
+}
+
+.tag-tracker {
+  background-color: #fed7d7;  /* red-100 */
+  color:          #c53030;  
+}
+
+.stat-number.tracker {
+  color: #f56565;  
 }
 
 .tag-first-party {
@@ -179,7 +193,7 @@ h1 {
 }
 
 .stat-number.third-party {
-  color: #f56565;
+  color: #d69e2e;
 }
 
 .stat-number.first-party {
